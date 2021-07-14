@@ -6,12 +6,18 @@ from flask import jsonify, request
 
 
 def check_file_path(url):
-    result = None
+    result = {}
     if os.path.exists(url):
         if os.path.isfile(url):
-            result = 'file'
+            result = {
+                'type': 'file',
+                'exist': True
+            }
         if os.path.isdir(url):
-            result = 'folder'
+            result = {
+                'type': 'folder',
+                'exist': True
+            }
     return result
 
 
@@ -45,14 +51,14 @@ def hello():
 @app.route('/file/<path:localSystemFilePath>', methods=['GET'])
 async def get_path(localSystemFilePath):
     try:
-        result = None
+        _result = None
         resp = None
-        path = f'./file/{localSystemFilePath}'
-        path_type = check_file_path(path)
-        if path_type == 'file':
-            result = await get_file_data(path)
-        elif path_type == 'folder':
-            data = await get_folder_data(path)
+        _path = f'./file/{localSystemFilePath}'
+        _path_info = check_file_path(_path)
+        if _path_info['type'] == 'file':
+            result = await get_file_data(_path)
+        elif _path_info['type'] == 'folder':
+            data = await get_folder_data(_path)
             result = {
                 'isDirectory': True,
                 'files': data
@@ -70,16 +76,25 @@ async def get_path(localSystemFilePath):
 
 @app.route('/file/<path:localSystemFilePath>', methods=['POST'])
 def add_path(localSystemFilePath):
-    _result = None
-    _json = request.json
-    _path = _json['localSystemFilePath']
-    if _path and request.method == 'POST':
-        _result = check_file_path(localSystemFilePath)
-        if not _result:
-            return jsonify()
+    try:
+        _result = None
+        _json = request.json
+        _data = _json['files']
+        if _data and request.method == 'POST':
+            _path = f'./file/{localSystemFilePath}'
+            _path_info = check_file_path(_path)
+
         else:
-            return jsonify()
-    return jsonify({'data': 'result'})
+            message = {
+                'status': 400,
+                'message': 'No file data in request'
+            }
+            resp = jsonify(message)
+            resp.status_code = 400
+            return resp
+
+    except Exception as e:
+        print(e)
 
 
 @app.errorhandler(404)

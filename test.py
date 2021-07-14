@@ -6,7 +6,7 @@ base_url = 'http://127.0.0.1:5000/file/'
 
 
 async def count():
-    for i in [1, 2, 3, 4, 5, 6, 7]:
+    for i in [1, 2, 3, 4, 5]:
         print(i)
         await asyncio.sleep(1)
 
