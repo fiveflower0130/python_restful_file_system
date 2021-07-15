@@ -1,37 +1,50 @@
 import requests
-import asyncio
-from aiohttp import ClientSession
-
-base_url = 'http://127.0.0.1:5000/file/'
+import unittest
+import pytest
 
 
-async def count():
-    for i in [1, 2, 3, 4, 5]:
-        print(i)
-        await asyncio.sleep(1)
+def test_get_path():
+    url = 'http://127.0.0.1:5000/file/path/to/'
+    resp = requests.get(url)
+    assert resp.status_code == 200
 
 
-async def test_get_path(path):
-    endpoint = base_url+path
-    print(f'Getting start with {endpoint}')
-
-    async with ClientSession() as session:
-        async with session.get(endpoint) as response:
-            response = await response.json()
-            print(response)
+def test_error_get_path():
+    url = 'http://127.0.0.1:5000/file/path/to/to'
+    resp = requests.get(url)
+    assert resp.status_code == 404
 
 
-async def main():
-    await asyncio.gather(count(), test_get_path('path/to/'), test_get_path('path/to/README.md'))
-    # resp = requests.get(endpoint)
-    # data = resp.json()
-    # print(data)
+def test_get_file():
+    url = 'http://127.0.0.1:5000/file/path/to/test.txt'
+    resp = requests.get(url)
+    assert resp.status_code == 200
 
-asyncio.run(main())
-print('Finished!')
-# test_get_path('path/to/README.md')
-# print('test1 Finished!')
-# test_get_path('path/to/test.txt')
-# print('test2 Finished!')
-# test_get_path('path/to/')
-# print('test3 Finished!')
+
+def test_error_get_file():
+    url = 'http://127.0.0.1:5000/file/path/to/test5.txt'
+    resp = requests.get(url)
+    assert resp.status_code == 404
+
+
+def test_post_file():
+    url = 'http://127.0.0.1:5000/file/path/to/test1.txt'
+    info = {"files": ["111111"]}
+    resp = requests.post(url, json=info, headers={
+                         'Content-Type': 'application/json'})
+    assert resp.status_code == 200
+
+
+def test_patch_file():
+    url = 'http://127.0.0.1:5000/file/path/to/test1.txt'
+    info = {"files": ["22222", "3333333"]}
+    resp = requests.patch(url=url, json=info)
+    assert resp.status_code == 200
+
+
+def test_delete_file():
+    url = 'http://127.0.0.1:5000/file/path/to/test1.txt'
+    resp = requests.delete(url)
+    data = resp.json()
+    print("data: ", data)
+    assert resp.status_code == 200
