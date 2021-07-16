@@ -1,5 +1,3 @@
-# python restful api_file service by floolwing CRUD
-
 # python 環境設定
 
 1. 透過啟動虛擬環境的方式來跑python
