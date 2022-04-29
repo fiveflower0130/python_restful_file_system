@@ -34,7 +34,7 @@ async def get_file_data(file_path):
 
 
 async def get_folder_data(folder_path, folder_query):
-    
+
     # if orderBy in ["lastModified", "size", "fileName"]:
     #     data.sort(key=os.path.getctime) orderBy or orderByDirection or filterByName:
     datas = []
@@ -47,41 +47,48 @@ async def get_folder_data(folder_path, folder_query):
                 if datas:
                     datas = sorted(datas, key=os.path.getmtime, reverse=True)
                 else:
-                    files = [os.path.join(folder_path, data) for data in os.listdir(folder_path)]
+                    files = [os.path.join(folder_path, data)
+                             for data in os.listdir(folder_path)]
                     datas = sorted(files, key=os.path.getmtime, reverse=True)
             if orderBy == "size":
                 if datas:
                     datas = sorted(datas, key=os.path.getsize, reverse=True)
                 else:
-                    files = [os.path.join(folder_path, data) for data in os.listdir(folder_path)]
+                    files = [os.path.join(folder_path, data)
+                             for data in os.listdir(folder_path)]
                     datas = sorted(files, key=os.path.getsize, reverse=True)
             if orderBy == "fileName":
                 if datas:
                     datas = sorted(datas, reverse=True)
                 else:
-                    files = [os.path.join(folder_path, data) for data in os.listdir(folder_path)]
+                    files = [os.path.join(folder_path, data)
+                             for data in os.listdir(folder_path)]
                     datas = sorted(files, reverse=True)
-        if orderByDirection:   
+        if orderByDirection:
             if orderByDirection == "Ascending":
                 if datas:
                     datas = sorted(datas, key=lambda t: os.stat(t).st_mtime)
                 else:
-                    files = [os.path.join(folder_path, data) for data in os.listdir(folder_path)]
+                    files = [os.path.join(folder_path, data)
+                             for data in os.listdir(folder_path)]
                     datas = sorted(files, key=lambda t: os.stat(t).st_mtime)
             if orderByDirection == "Descending":
                 if datas:
                     datas = sorted(datas, key=lambda t: -os.stat(t).st_mtime)
                 else:
-                    files = [os.path.join(folder_path, data) for data in os.listdir(folder_path)] 
+                    files = [os.path.join(folder_path, data)
+                             for data in os.listdir(folder_path)]
                     datas = sorted(files, key=lambda t: -os.stat(t).st_mtime)
         if filterByName:
             if datas:
                 datas = [data for data in datas if filterByName in data]
             else:
-                files = [os.path.join(folder_path, data) for data in os.listdir(folder_path)]
+                files = [os.path.join(folder_path, data)
+                         for data in os.listdir(folder_path)]
                 datas = [file for file in files if filterByName in file]
     else:
-        datas = [os.path.join(folder_path, data) for data in os.listdir(folder_path)]
+        datas = [os.path.join(folder_path, data)
+                 for data in os.listdir(folder_path)]
     datas = [data[15:] for data in datas]
     await asyncio.sleep(1)
     return datas
@@ -112,7 +119,7 @@ async def update_file(file_path, file_data):
             if len(file_data) > 0:
                 lines.append(file_data)
         await sortedbooks.write('\n'.join(lines))
-        await sortedbooks.close()
+        sortedbooks.close()
 
     async with aiofiles.open(file_path, encoding='utf-8', mode='r') as file:
         contents = await file.read()
